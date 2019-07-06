@@ -19,14 +19,11 @@ class VisionService : Thread() {
 
     override fun run() {
         super.run()
-        val tess = Tesseract()
         val dataFile = File("eng.traineddata")
         if (!dataFile.exists()) {
             dataFile.writeBytes(Main::class.java.getResource("/eng.traineddata").readBytes())
         }
-        val waitTime = ConfigController.getConfig().get("period").asLong
-        val template = ConfigController.getConfig()["outputTemplate"].asString
-        val outputFile = File(ConfigController.getConfig()["outputPath"].asString)
+        val tess = Tesseract()
         Platform.runLater {
             Controllers.getMainController().labelServiceStatus.textFill = Color(0.0, 1.0, 0.0, 1.0)
             Controllers.getMainController().labelServiceStatus.text = "Active"
@@ -37,12 +34,13 @@ class VisionService : Thread() {
                 val img = capture(window)
                 Platform.runLater { Controllers.getMainController().imageViewOWPreview.image = SwingFXUtils.toFXImage(img, null) }
                 if (img != null) {
-                    val subImg = img.getSubimage(1100, 500, 100, 45)
-                    val base = subImg.getRGB(0, 0)
-                    val r = base shr 16 and 0xFF
-                    val g = base shr 8 and 0xFF
-                    val b = base shr 0 and 0xFF
-                    if (r == 193 && g == 75 && b == 249) {
+                    var modeLarge = true
+                    if (img.getRGB(970, 549) != img.getRGB(970, 498))
+                        modeLarge = false
+                    val subImg = if (modeLarge) img.getSubimage(1100, 500, 100, 45) else img.getSubimage(1075, 512, 97, 37)
+                    val h = subImg.height
+                    val w = subImg.width
+                    if (subImg.getRGB(0,0) == subImg.getRGB(w - 1, h - 1)) {
                         val ocr = tess.doOCR(subImg).removeSuffix("\n")
                         val testArr = ocr.toCharArray()
                         var digital = true
@@ -63,14 +61,14 @@ class VisionService : Thread() {
                                         Controllers.getMainController().labelWins.text = obj["w"].asString
                                         Controllers.getMainController().labelLosses.text = obj["l"].asString
                                     }
-                                    outputFile.writeText(template.replace("%w", obj["w"].asString).replace("%l", obj["l"].asString).replace("%sr", sr.toString()))
+                                    File(ConfigController.getConfig()["outputPath"].asString).writeText(ConfigController.getConfig()["outputTemplate"].asString.replace("%w", obj["w"].asString).replace("%l", obj["l"].asString).replace("%sr", sr.toString()))
                                 }
                             }
                         }
                     }
                 }
             }
-            sleep(waitTime)
+            sleep(ConfigController.getConfig().get("period").asLong)
         }
         Platform.runLater {
             Controllers.getMainController().labelServiceStatus.textFill = Color(1.0, 0.0, 0.0, 1.0)
@@ -79,47 +77,31 @@ class VisionService : Thread() {
     }
 
     private fun capture(hWnd: WinDef.HWND): BufferedImage? {
-
         val hdcWindow = User32.INSTANCE.GetDC(hWnd)
         val hdcMemDC = GDI32.INSTANCE.CreateCompatibleDC(hdcWindow)
-
         val bounds = WinDef.RECT()
-
         User32.INSTANCE.GetClientRect(hWnd, bounds)
-
         val width = bounds.right - bounds.left
         val height = bounds.bottom - bounds.top
-
-        //println(width)
-        //println(height)
-
         if (height == 0 || width == 0)
             return null
-
         val hBitmap = GDI32.INSTANCE.CreateCompatibleBitmap(hdcWindow, width, height)
-
         val hOld = GDI32.INSTANCE.SelectObject(hdcMemDC, hBitmap)
         GDI32.INSTANCE.BitBlt(hdcMemDC, 0, 0, width, height, hdcWindow, 0, 0, GDI32.SRCCOPY)
-
         GDI32.INSTANCE.SelectObject(hdcMemDC, hOld)
         GDI32.INSTANCE.DeleteDC(hdcMemDC)
-
         val bmi = WinGDI.BITMAPINFO()
         bmi.bmiHeader.biWidth = width
         bmi.bmiHeader.biHeight = -height
         bmi.bmiHeader.biPlanes = 1
         bmi.bmiHeader.biBitCount = 32
         bmi.bmiHeader.biCompression = WinGDI.BI_RGB
-
         val buffer = Memory((width * height * 4).toLong())
         GDI32.INSTANCE.GetDIBits(hdcWindow, hBitmap, 0, height, buffer, bmi, WinGDI.DIB_RGB_COLORS)
-
         val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
         image.setRGB(0, 0, width, height, buffer.getIntArray(0, width * height), 0, width)
-
         GDI32.INSTANCE.DeleteObject(hBitmap)
         User32.INSTANCE.ReleaseDC(hWnd, hdcWindow)
         return image
-
     }
 }
