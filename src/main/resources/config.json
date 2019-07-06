@@ -1,6 +1,6 @@
 {
   "period": 250,
   "messages": true,
-  "outputPath": "testOutput.txt",
+  "outputPath": "output.txt",
   "outputTemplate": "W%w-L%l\nSR:%sr"
 }
