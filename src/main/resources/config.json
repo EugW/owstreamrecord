@@ -1,5 +1,5 @@
 {
-  "period": 250,
+  "period": 500,
   "messages": true,
   "outputPath": "output.txt",
   "outputTemplate": "W%w-L%l\nSR:%sr"
