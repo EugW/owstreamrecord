@@ -1,5 +1,7 @@
 package pro.eugw.owstreamrecord
 
+import com.sun.jna.platform.win32.Kernel32
+import com.sun.jna.platform.win32.User32
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
@@ -33,7 +35,8 @@ class Main : Application() {
 
     override fun stop() {
         super.stop()
-        service.running = false
+        val kernel32 = Kernel32.INSTANCE
+        kernel32.TerminateProcess(kernel32.GetCurrentProcess(), 0)
     }
 
     companion object {
