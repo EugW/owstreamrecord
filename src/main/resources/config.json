@@ -2,5 +2,6 @@
   "period": 500,
   "messages": true,
   "outputPath": "output.txt",
-  "outputTemplate": "W%w-L%l\nSR:%sr"
+  "outputTemplate": "W%w-L%l\nSR:%sr",
+  "resetWLSR": true
 }

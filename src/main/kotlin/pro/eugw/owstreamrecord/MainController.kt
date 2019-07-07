@@ -15,6 +15,7 @@ class MainController {
     lateinit var labelLosses: Label
     lateinit var textAreaOutputTemplate: TextArea
     lateinit var toggleButtonMessages: ToggleButton
+    lateinit var toggleButtonResetWLSR: ToggleButton
 
     fun initialize() {
         Controllers.setMainController(this)

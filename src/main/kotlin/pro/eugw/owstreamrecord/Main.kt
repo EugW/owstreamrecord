@@ -25,6 +25,7 @@ class Main : Application() {
             cfg.setProp("outputPath", ctrl.textFieldOutputFilePath.text)
             cfg.setProp("outputTemplate", ctrl.textAreaOutputTemplate.text)
             cfg.setProp("messages", ctrl.toggleButtonMessages.isSelected)
+            cfg.setProp("resetWLSR", ctrl.toggleButtonResetWLSR.isSelected)
             cfg.saveConfig()
         }
         service.start()
@@ -50,6 +51,7 @@ class Main : Application() {
         ctrl.textFieldOutputFilePath.text = cfg["outputPath"].asString
         ctrl.textAreaOutputTemplate.text = cfg["outputTemplate"].asString
         ctrl.toggleButtonMessages.isSelected = cfg["messages"].asBoolean
+        ctrl.toggleButtonResetWLSR.isSelected = cfg["resetWLSR"].asBoolean
     }
 
 }

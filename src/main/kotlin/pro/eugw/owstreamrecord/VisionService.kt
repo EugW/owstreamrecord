@@ -14,6 +14,7 @@ class VisionService : Thread() {
 
     var running = true
     private var firstRun = true
+    private var resetted = true
 
     override fun run() {
         super.run()
@@ -44,18 +45,19 @@ class VisionService : Thread() {
                 if (winName == "Overwatch" && path == "Overwatch.exe")
                     window = hWnd
                     true
-            },null)
+            }, null)
             if (window != null) {
                 val img = capture(window as WinDef.HWND)
                 Platform.runLater { Controllers.getMainController().imageViewOWPreview.image = SwingFXUtils.toFXImage(img, null) }
                 if (img != null) {
+                    resetted = false
                     var modeLarge = true
                     if (img.getRGB(970, 549) != img.getRGB(970, 498))
                         modeLarge = false
                     val subImg = if (modeLarge) img.getSubimage(1100, 500, 100, 45) else img.getSubimage(1075, 512, 97, 37)
                     val h = subImg.height
                     val w = subImg.width
-                    if (subImg.getRGB(0,0) == subImg.getRGB(w - 1, h - 1)) {
+                    if (subImg.getRGB(0,0) == subImg.getRGB(w - 1, h - 1) && img.getRGB(980, 780) == img.getRGB(1275, 780)) {
                         val ocr = tess.doOCR(subImg).removeSuffix("\n")
                         if (ocr.isNumber() && ocr.isNotBlank()) {
                             val sr = ocr.toInt()
@@ -82,6 +84,15 @@ class VisionService : Thread() {
                             }
                         }
                     }
+                }
+            } else if (ConfigController.getConfig()["resetWLSR"].asBoolean && !resetted) {
+                resetted = true
+                firstRun = true
+                prevSR = 0
+                Platform.runLater {
+                    Controllers.getMainController().labelCurrentSR.text = ""
+                    Controllers.getMainController().labelWins.text = 0.toString()
+                    Controllers.getMainController().labelLosses.text = 0.toString()
                 }
             }
             sleep(ConfigController.getConfig().get("period").asLong)

@@ -30,7 +30,14 @@ class ConfigController {
     init {
         val file = File("config.json")
         try {
-            JsonParser().parse(file.readText()).asJsonObject
+            val sampleObject = JsonParser().parse(file.readText()).asJsonObject
+            val originObject = JsonParser().parse(Main::class.java.getResource("/config.json").readText()).asJsonObject
+            originObject.keySet().forEach {
+                if (!sampleObject.has(it)) {
+                    file.writeText(Main::class.java.getResource("/config.json").readText())
+                    return@forEach
+                }
+            }
         } catch (e: Exception) {
             file.writeText(Main::class.java.getResource("/config.json").readText())
         }
