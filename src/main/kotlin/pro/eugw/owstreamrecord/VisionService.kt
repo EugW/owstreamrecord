@@ -70,6 +70,7 @@ class VisionService : Thread() {
                                         Controllers.getMainController().labelWins.text = 0.toString()
                                         Controllers.getMainController().labelLosses.text = 0.toString()
                                     }
+                                    File(ConfigController.getConfig()["outputPath"].asString).writeText(ConfigController.getConfig()["outputTemplate"].asString.replace("%w", 0.toString()).replace("%l", 0.toString()).replace("%sr", sr.toString()))
                                     firstRun = false
                                 } else if (sr != prevSR) {
                                     val obj = WLTracker.updateSR(sr, prevSR)
