@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'pro.eugw'
-version '1.1-SNAPSHOT'
+version '1.2-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
@@ -25,8 +25,5 @@ jar {
     manifest {
         attributes 'Main-Class': 'pro.eugw.owstreamrecord.Main'
     }
-    // This line of code recursively collects and copies all of a project's files
-    // and adds them to the JAR itself. One can extend this task, to skip certain
-    // files or particular types at will
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }

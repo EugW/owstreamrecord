@@ -3,6 +3,10 @@
     <words>
       <w>ifile</w>
       <w>ofile</w>
+      <w>overwatch</w>
+      <w>psapi</w>
+      <w>tessdata</w>
+      <w>traineddata</w>
     </words>
   </dictionary>
 </component>

@@ -18,8 +18,8 @@ class Main : Application() {
         primaryStage.isResizable = false
         primaryStage.show()
         analyzeConfig()
-        Controllers.getMainController().buttonApplySettings.setOnMouseClicked {
-            val ctrl = Controllers.getMainController()
+        val ctrl = Controllers.getMainController()
+        ctrl.buttonApplySettings.setOnMouseClicked {
             val cfg = ConfigController
             cfg.setProp("period", ctrl.textFieldPeriod.text)
             cfg.setProp("outputPath", ctrl.textFieldOutputFilePath.text)
