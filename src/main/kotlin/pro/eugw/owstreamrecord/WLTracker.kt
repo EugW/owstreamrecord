@@ -39,6 +39,7 @@ class WLTracker(wins: Int, losses: Int) {
     companion object {
         private var wins = 0
         private var losses = 0
+        private var trayIcon: TrayIcon? = null
         fun updateSR(newSR: Int, originSR: Int): JsonObject {
             val jsonObject = JsonObject()
             if (newSR > originSR) {
@@ -54,12 +55,14 @@ class WLTracker(wins: Int, losses: Int) {
             jsonObject.addProperty("l", losses)
             return jsonObject
         }
-        private fun displayNotification(text: String) {
-            val tray = SystemTray.getSystemTray()
-            val trayIcon = TrayIcon(ImageIO.read(Main::class.java.getResourceAsStream("/icon.png")))
-            trayIcon.isImageAutoSize = true
-            tray.add(trayIcon)
-            trayIcon.displayMessage("OWStreamRecord", text, TrayIcon.MessageType.INFO)
+        fun displayNotification(text: String) {
+            if (trayIcon == null) {
+                val tray = SystemTray.getSystemTray()
+                trayIcon = TrayIcon(ImageIO.read(Main::class.java.getResourceAsStream("/icon.png")))
+                trayIcon!!.isImageAutoSize = true
+                tray.add(trayIcon)
+            }
+            trayIcon!!.displayMessage("OWStreamRecord", text, TrayIcon.MessageType.INFO)
         }
     }
 
