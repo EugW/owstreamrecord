@@ -1,7 +1,6 @@
 package pro.eugw.owstreamrecord
 
 import com.sun.jna.platform.win32.Kernel32
-import com.sun.jna.platform.win32.User32
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
@@ -12,6 +11,7 @@ import javafx.stage.Stage
 class Main : Application() {
 
     private lateinit var service: VisionService
+
     override fun start(primaryStage: Stage) {
         service = VisionService()
         primaryStage.title = "OWStreamRecord"

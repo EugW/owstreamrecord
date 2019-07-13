@@ -13,12 +13,12 @@
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pro.eugw.owstreamrecord.MainController">
     <Tab text="Home">
         <AnchorPane prefHeight="200.0" prefWidth="200.0">
-            <ImageView fx:id="imageViewOWPreview" fitHeight="113.0" fitWidth="200.0" layoutX="386.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" />
-            <Label layoutX="386.0" layoutY="14.0" text="Preview:" />
+            <ImageView fx:id="imageViewOWPreview" fitHeight="250.0" fitWidth="444.0" layoutX="13.0" layoutY="82.0" pickOnBounds="true" preserveRatio="true" />
+            <Label layoutX="13.0" layoutY="65.0" text="Preview:" />
             <Label layoutX="14.0" layoutY="14.0" text="Current SR: " />
             <Label fx:id="labelCurrentSR" layoutX="77.0" layoutY="14.0" />
-            <Label layoutX="386.0" layoutY="144.0" text="Service status: " />
-            <Label fx:id="labelServiceStatus" layoutX="464.0" layoutY="144.0" />
+            <Label layoutX="300.0" layoutY="14.0" text="Service status: " />
+            <Label fx:id="labelServiceStatus" layoutX="378.0" layoutY="14.0" />
             <Label layoutX="14.0" layoutY="31.0" text="Wins: " />
             <Label layoutX="14.0" layoutY="48.0" text="Losses: " />
             <Label fx:id="labelWins" layoutX="46.0" layoutY="31.0" />

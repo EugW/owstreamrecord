@@ -5,6 +5,7 @@ import com.google.gson.JsonParser
 import java.io.File
 
 class ConfigController {
+
     companion object {
         private var config: JsonObject? = null
         fun setConfig(jsonObject: JsonObject) {
@@ -45,4 +46,5 @@ class ConfigController {
         setConfig(jsonObject)
         println("Config initialized")
     }
+
 }

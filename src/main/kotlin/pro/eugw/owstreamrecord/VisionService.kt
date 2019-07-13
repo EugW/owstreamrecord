@@ -12,9 +12,9 @@ import java.io.File
 
 class VisionService : Thread() {
 
-    var running = true
     private var firstRun = true
     private var resetted = true
+    private var groupMode = false
 
     override fun run() {
         super.run()
@@ -31,7 +31,7 @@ class VisionService : Thread() {
         val user32 = User32.INSTANCE
         val kernel32 = Kernel32.INSTANCE
         val psapi = Psapi.INSTANCE
-        while (running) {
+        while (true) {
             var window: WinDef.HWND? = null
             user32.EnumWindows({ hWnd, _ ->
                 val charArr = CharArray(512)
@@ -51,14 +51,15 @@ class VisionService : Thread() {
                 Platform.runLater { Controllers.getMainController().imageViewOWPreview.image = SwingFXUtils.toFXImage(img, null) }
                 if (img != null) {
                     resetted = false
-                    var modeLarge = true
-                    if (img.getRGB(970, 549) != img.getRGB(970, 498))
-                        modeLarge = false
-                    val subImg = if (modeLarge) img.getSubimage(1100, 500, 100, 45) else img.getSubimage(1075, 512, 97, 37)
+                    var largeMode = true
+                    if (!nearColorCompare(img.getRGB(970, 545), img.getRGB(970, 500), 5))
+                        largeMode = false
+                    var subImg = if (largeMode) img.getSubimage(1100, 500 - if (groupMode) 54 else 0, 100, 45) else img.getSubimage(1075, 512 - if (groupMode) 40 else 0, 97, 37)
+                    subImg = postProc(subImg, analyzeColors(subImg))
                     val h = subImg.height
                     val w = subImg.width
-                    if (subImg.getRGB(0,0) == subImg.getRGB(w - 1, h - 1) && img.getRGB(980, 780) == img.getRGB(1275, 780)) {
-                        val ocr = tess.doOCR(subImg).removeSuffix("\n")
+                    if (nearColorCompare(subImg.getRGB(0,0), subImg.getRGB(w - 1, h - 1), 5) && nearColorCompare(img.getRGB(980, 770), img.getRGB(1275, 770), 5)) {
+                        val ocr = tess.doOCR(subImg).substringBefore("\n")
                         if (ocr.isNumber() && ocr.isNotBlank()) {
                             val sr = ocr.toInt()
                             if (sr in 0..5000) {
@@ -83,7 +84,7 @@ class VisionService : Thread() {
                                     File(ConfigController.getConfig()["outputPath"].asString).writeText(ConfigController.getConfig()["outputTemplate"].asString.replace("%w", obj["w"].asString).replace("%l", obj["l"].asString).replace("%sr", sr.toString()))
                                 }
                             }
-                        }
+                        } else groupMode = !groupMode
                     }
                 }
             } else if (ConfigController.getConfig()["resetWLSR"].asBoolean && !resetted) {
@@ -97,10 +98,6 @@ class VisionService : Thread() {
                 }
             }
             sleep(ConfigController.getConfig().get("period").asLong)
-        }
-        Platform.runLater {
-            Controllers.getMainController().labelServiceStatus.textFill = Color(1.0, 0.0, 0.0, 1.0)
-            Controllers.getMainController().labelServiceStatus.text = "Inactive"
         }
     }
 
@@ -134,4 +131,18 @@ class VisionService : Thread() {
         user32.ReleaseDC(hWnd, hdcWindow)
         return image
     }
+
+    private fun postProc(origin: BufferedImage, color: Int): BufferedImage {
+        for (i in 0 until origin.width) {
+            for (j in 0 until origin.height) {
+                if (nearColorCompare(origin.getRGB(i, j), color, 30)) {
+                    origin.setRGB(i, j, 0)
+                } else {
+                    origin.setRGB(i, j, 16777215)
+                }
+            }
+        }
+        return origin
+    }
+
 }
