@@ -58,7 +58,9 @@ class VisionService : Thread() {
                     subImg = postProc(subImg, analyzeColors(subImg))
                     val h = subImg.height
                     val w = subImg.width
-                    if (nearColorCompare(subImg.getRGB(0,0), subImg.getRGB(w - 1, h - 1), 5) && nearColorCompare(img.getRGB(980, 770), img.getRGB(1275, 770), 5)) {
+                    if (nearColorCompare(subImg.getRGB(0,0), subImg.getRGB(w - 1, h - 1), 5) &&
+                        nearColorCompare(img.getRGB(980, 770), img.getRGB(1275, 770), 5) &&
+                        nearColorCompare(img.getRGB(1585, 33), img.getRGB(1862, 86), 5)) {
                         val ocr = tess.doOCR(subImg).substringBefore("\n")
                         if (ocr.isNumber() && ocr.isNotBlank()) {
                             val sr = ocr.toInt()
